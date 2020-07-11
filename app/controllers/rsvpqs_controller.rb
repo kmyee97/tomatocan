@@ -25,10 +25,15 @@ class RsvpqsController < ApplicationController
       else
         RsvpMailer.with(email: @email, event: @event, timeZone: params[:timeZone]).rsvp_reminder.deliver_later(wait_until: @reminder_date)
       end
-      redirect_to home_path
+      redirect_to request.referrer
     else
-      flash[:error] = 'Please enter a valid email address'
-      redirect_back(fallback_location: root_path)
+      if current_user
+        flash[:error] = 'You already Rsvp for this event'
+        redirect_back(fallback_location: root_path)
+      else
+        flash[:error] = 'Please enter a valid email address'
+        redirect_back(fallback_location: root_path)
+      end
     end
   end
 
